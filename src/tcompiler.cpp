@@ -349,6 +349,8 @@ int terra_inittarget(lua_State * L) {
         #endif
     }
     
+    TT->noredzone = lua_toboolean(L,5);
+    
     TT->next_unused_id = 0;
     TT->ctx = new LLVMContext();
     std::string err;
@@ -1042,6 +1044,7 @@ struct CCallingConv {
         #if LLVM_VERSION > 32 && defined(__arm__)
             fn->addAttribute(llvm::AttributeSet::FunctionIndex, llvm::Attribute::NoUnwind);
         #endif
+
         #if LLVM_VERSION >= 37
         DEBUG_ONLY(T) {
             fn->addFnAttr("no-frame-pointer-elim","true");
@@ -1347,6 +1350,9 @@ struct FunctionEmitter {
                     fstate->func->ADDFNATTR(OptimizeNone);
                     fstate->func->ADDFNATTR(NoInline);
                 }
+            }
+            if(CU->TT->noredzone) {
+                fstate->func->ADDFNATTR(NoRedZone);
             }
 
             if(!isextern) {

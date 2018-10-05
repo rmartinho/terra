@@ -732,12 +732,12 @@ terra.target.__index = terra.target
 function terra.istarget(a) return getmetatable(a) == terra.target end
 function terra.newtarget(tbl)
     if not type(tbl) == "table" then error("expected a table",2) end
-    local Triple,CPU,Features,FloatABIHard = tbl.Triple,tbl.CPU,tbl.Features,tbl.FloatABIHard
+    local Triple,CPU,Features,FloatABIHard,NoRedZone = tbl.Triple,tbl.CPU,tbl.Features,tbl.FloatABIHard,tbl.NoRedZone
     if Triple then
         CPU = CPU or ""
         Features = Features or ""
     end
-    return setmetatable({ llvm_target = cdatawithdestructor(terra.inittarget(Triple,CPU,Features,FloatABIHard),terra.freetarget),
+    return setmetatable({ llvm_target = cdatawithdestructor(terra.inittarget(Triple,CPU,Features,FloatABIHard,NoRedZone),terra.freetarget),
                           Triple = Triple,
                           cnametostruct = { general = {}, tagged = {}}  --map from llvm_name -> terra type used to make c structs unique per llvm_name
                         },terra.target)
